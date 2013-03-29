@@ -4,7 +4,7 @@
 class SimilarityMatrix
 {
 public:
-	inline int operator()(char a, char b, char c);
+	inline int operator() (char a, char b, char c);
 };
 
 #endif

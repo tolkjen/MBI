@@ -1,4 +1,8 @@
 #include "SequenceComparator.h"
+#include <algorithm>
+
+// This macro allows easier access to 3D elements in 1D array
+#define COORDS(a, b, c) ((a) + (b)*aLength + (c)*abLength)
 
 SequenceComparator::SequenceComparator(void)
 {
@@ -27,63 +31,27 @@ void SequenceComparator::setMatrix(SimilarityMatrix mat) {
 	_similarity = mat;
 }
 
-typedef struct {
-	int previous;
-	int value;
-} Cell;
-
-void reverseString(string &s) {
-	string result;
-	for (int i = 0; i < s.size() / 2; i++) {
-		swap(s[i], s[s.size()-i-1]);
-	}
-}
-
 SequenceComparator::CompareResult SequenceComparator::compare(string &sA, string &sB, string &sC) {
-
-#define COORDS(a, b, c) ((a) + (b)*aLength + (c)*abLength)
-
 	const int aLength = sA.size() + 1;
 	const int bLength = sB.size() + 1;
 	const int cLength = sC.size() + 1;
 	const int abLength = aLength * bLength;
-	Cell* F = new Cell[aLength * bLength * cLength];
+
+	// newMax is used to hold 7 values from which we pick the greatest using maxElementIndex().
+	// I do it instead of max(max(max( .... ), v5), v6).
 	int newMax[7];
+	// previousLUT holds information about distance (in terms of linear memory of array F) between
+	// a cube and 7 other cubes which are behind it.
 	int previousLUT[] = { 
 		-1-aLength-abLength, -1-aLength, -1-abLength, -1, -aLength-abLength, -aLength, -abLength 
 	};
+	// This array holds info about value and predecessor of each cell (cube).
+	Cell* F = new Cell[aLength * bLength * cLength];
+	
+	// Fill three walls of the cube with values supplied by NonlinearFunctor object.
+	createBorders(F, aLength, bLength, cLength);
 
-	for (int a = 0; a < aLength; a++) {
-		F[COORDS(a, 0, 0)].value = _functor->value(a, 0, 0);
-		F[COORDS(a, 0, 0)].previous = COORDS(a-1, 0, 0);
-	}
-	for (int b = 1; b < bLength; b++) {
-		F[COORDS(0, b, 0)].value = _functor->value(0, b, 0);
-		F[COORDS(0, b, 0)].previous = COORDS(0, b-1, 0);
-	}
-	for (int c = 1; c < cLength; c++) {
-		F[COORDS(0, 0, c)].value = _functor->value(0, 0, c);
-		F[COORDS(0, 0, c)].previous = COORDS(0, 0, c-1);
-	}
-	for (int a = 1; a < aLength; a++) {
-		for (int b = 1; b < bLength; b++) {
-			F[COORDS(a, b, 0)].value = _functor->value(a, b, 0);
-			F[COORDS(a, b, 0)].previous = COORDS(a-1, b-1, 0);
-		}
-	}
-	for (int a = 1; a < aLength; a++) {
-		for (int c = 1; c < cLength; c++) {
-			F[COORDS(a, 0, c)].value = _functor->value(a, 0, c);
-			F[COORDS(a, 0, c)].previous = COORDS(a-1, 0, c-1);
-		}
-	}
-	for (int c = 1; c < cLength; c++) {
-		for (int b = 1; b < bLength; b++) {
-			F[COORDS(0, b, c)].value = _functor->value(0, b, c);
-			F[COORDS(0, b, c)].previous = COORDS(0, b-1, c-1);
-		}
-	}
-
+	// Fill entire structure
 	for (int c = 1; c < cLength; c++) {
 		for (int b = 1; b < bLength; b++) {
 			for (int a = 1; a < aLength; a++) {
@@ -102,7 +70,62 @@ SequenceComparator::CompareResult SequenceComparator::compare(string &sA, string
 		}
 	}
 
+	// When the array is filled with data, extract information about sequence match and match value.
+	CompareResult result = getResultFromArray(F, sA, sB, sC);
+
+	// Free memory
+	delete [] F;
+
+	return result;
+}
+
+void SequenceComparator::createBorders(Cell *F, int aLength, int bLength, int cLength) {
+	const int abLength = aLength * bLength;
+
+	for (int a = 0; a < aLength; a++) {
+		F[COORDS(a, 0, 0)].value = _functor->value(a, 0, 0);
+		F[COORDS(a, 0, 0)].previous = COORDS(a-1, 0, 0);
+	}
+	for (int b = 1; b < bLength; b++) {
+		F[COORDS(0, b, 0)].value = _functor->value(0, b, 0);
+		F[COORDS(0, b, 0)].previous = COORDS(0, b-1, 0);
+	}
+	for (int c = 1; c < cLength; c++) {
+		F[COORDS(0, 0, c)].value = _functor->value(0, 0, c);
+		F[COORDS(0, 0, c)].previous = COORDS(0, 0, c-1);
+	}
+	for (int a = 1; a < aLength; a++) {
+		for (int b = 1; b < bLength; b++) {
+			F[COORDS(a, b, 0)].value = _functor->value(a, b, 0);
+			F[COORDS(a, b, 0)].previous = maxElementIndex(F, COORDS(a-1, b, 0), COORDS(a, b-1, 0), COORDS(a-1, b-1, 0));
+		}
+	}
+	for (int a = 1; a < aLength; a++) {
+		for (int c = 1; c < cLength; c++) {
+			F[COORDS(a, 0, c)].value = _functor->value(a, 0, c);
+			F[COORDS(a, 0, c)].previous = maxElementIndex(F, COORDS(a-1, 0, c), COORDS(a, 0, c-1), COORDS(a-1, 0, c-1));
+		}
+	}
+	for (int c = 1; c < cLength; c++) {
+		for (int b = 1; b < bLength; b++) {
+			F[COORDS(0, b, c)].value = _functor->value(0, b, c);
+			F[COORDS(0, b, c)].previous = maxElementIndex(F, COORDS(0, b, c-1), COORDS(0, b-1, c), COORDS(c, b-1, c-1));
+		}
+	}
+}
+
+SequenceComparator::CompareResult SequenceComparator::getResultFromArray(Cell *F, string &sA, string &sB, string &sC) {
+	const int aLength = sA.size() + 1;
+	const int bLength = sB.size() + 1;
+	const int cLength = sC.size() + 1;
+	const int abLength = aLength * bLength;
+
+	int previousLUT[] = { 
+		-1-aLength-abLength, -1-aLength, -1-abLength, -1, -aLength-abLength, -aLength, -abLength 
+	};
 	CompareResult result;
+
+	// Create three strings going from the last element in the array
 	int index = COORDS(aLength-1, bLength-1, cLength-1);
 	while (index != 0) {
 		const int diff = F[index].previous - index;
@@ -144,9 +167,12 @@ SequenceComparator::CompareResult SequenceComparator::compare(string &sA, string
 		index = F[index].previous;
 	}
 	
-	reverseString(result.sA);
-	reverseString(result.sB);
-	reverseString(result.sC);
+	// Strings were created in reverse order, so now we turn them around.
+	reverse(result.sA.begin(), result.sA.end());
+	reverse(result.sB.begin(), result.sB.end());
+	reverse(result.sC.begin(), result.sC.end());
+
+	// Store comparison value
 	result.value = F[COORDS(aLength-1, bLength-1, cLength-1)].value;
 
 	return result;
@@ -160,4 +186,14 @@ int SequenceComparator::maxElementIndex(int *tab, int count) {
 		}
 	}
 	return index;
+}
+
+int SequenceComparator::maxElementIndex(Cell *F, int i0, int i1, int i2) {
+	if (F[i0].value >= F[i1].value && F[i0].value >= F[i2].value) {
+		return i0;
+	} else if (F[i1].value >= F[i0].value && F[i1].value >= F[i2].value) {
+		return i1;
+	} else {
+		return i2;
+	}
 }

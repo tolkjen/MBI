@@ -1,5 +1,6 @@
 #include <iostream>
 #include "SequenceComparator.h"
+#include "SimilarityMatrix.h"
 
 using namespace std;
 
@@ -13,12 +14,15 @@ public:
 int main() {
 	SequenceComparator comparator(shared_ptr<NonlinearFunctor>(new QuadraticFunctor()));
 
-	string str0 = "kukurydza";
-	string str1 = "kurtyna";
-	string str2 = "rydzyk";
+	// Przyk³ad z wyk³adu 5, slajd 20
+	string str0 = "agttat";
+	string str1 = "gtcgtt";
+	string str2 = "attcgtat";
 	auto result = comparator.compare(str0, str1, str2);
-	cout << result.value << endl;
-	cout << result.sA.c_str() << endl << result.sB.c_str() << endl << result.sC.c_str();
+
+	// Wydruk wyniku
+	cout << "Comparison value: " << result.value << endl << endl;
+	cout << result.sA.c_str() << endl << result.sB.c_str() << endl << result.sC.c_str() << endl;
 
 	getchar();
 	return 0;
