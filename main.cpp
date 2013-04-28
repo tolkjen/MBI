@@ -11,19 +11,19 @@ public:
 	}
 };
 
-int main() {
+int main(int argc, char *argv[]) {
+	string str0, str1, str2;
+	cin >> str0;
+	cin >> str1;
+	cin >> str2;
+
 	SequenceComparator comparator(shared_ptr<NonlinearFunctor>(new QuadraticFunctor()));
+	SequenceComparator::CompareResult result = comparator.compare(str0, str1, str2);
 
-	// Przyk³ad z wyk³adu 5, slajd 20
-	string str0 = "agttat";
-	string str1 = "gtcgtt";
-	string str2 = "attcgtat";
-	auto result = comparator.compare(str0, str1, str2);
+	cout << result.sA << endl;
+	cout << result.sB << endl;
+	cout << result.sC << endl;
+	cout << result.value << endl;
 
-	// Wydruk wyniku
-	cout << "Comparison value: " << result.value << endl << endl;
-	cout << result.sA.c_str() << endl << result.sB.c_str() << endl << result.sC.c_str() << endl;
-
-	getchar();
 	return 0;
 }

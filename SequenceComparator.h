@@ -1,12 +1,15 @@
 #ifndef SEQUENCE_COMPARATOR_H
 #define SEQUENCE_COMPARATOR_H
 
+#include <string>
 #include <vector>
 #include <memory>
+#include <boost/shared_ptr.hpp>
 #include "NonlinearFunctor.h"
 #include "SimilarityMatrix.h"
 
 using namespace std;
+using namespace boost;
 
 class SequenceComparator
 {
