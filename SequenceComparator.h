@@ -21,51 +21,61 @@ public:
 		string sC;
 	} CompareResult;
 
-//  --------------------------------------------------------------------------
-//	Constructor (1)
-//	
-//	Creates a comparator object with a default similatity matrix and no 
-//	nonlinear functor. Before using compare(), set a functor by setFunctor().
+	/*
+	 * Creates a comparator object with a default similatity matrix and no 
+	 * nonlinear functor. Before using compare(), set a functor by setFunctor().
+	 */
 	SequenceComparator(void);
 	
-//  --------------------------------------------------------------------------
-//	Constructor (2)
-//	
-//	Creates a comparator object with a default similatity matrix and a functor 
-//	passed as a parameter.
+	/*
+	 * Creates a comparator object with a default similatity matrix and a 
+	 * functor passed as a parameter.
+	 * 
+	 * @param f Nonlinear functor object.
+	 */
 	SequenceComparator(shared_ptr<NonlinearFunctor> f);
 	
-//	--------------------------------------------------------------------------
-//	Constructor (3)
-//	
-//	Creates a comparator object with a similarity matrix passed as a parameter 
-//	and no functor. Before using compare(), set a functor by setFunctor().
+	/*
+	 * Creates a comparator object with a similarity matrix passed as a 
+	 * parameter and no functor. Before using compare(), set a functor by 
+	 * setFunctor().
+	 * 
+	 * @param mat Similarity matrix object.
+	 */
 	SequenceComparator(SimilarityMatrix mat);
 	
-//	--------------------------------------------------------------------------
-//	Constructor (4)
-//	
-//	Creates a comparator object with a similarity matrix passed as a parameter 
-//	and a functor passed as a parameter.
+	/*
+	 * Creates a comparator object with a similarity matrix passed as a 
+	 * parameter and a functor passed as a parameter.
+	 * 
+	 * @param f Nonlinear functor object.
+	 * @param mat Similarity matrix object.
+	 */
 	SequenceComparator(shared_ptr<NonlinearFunctor> f, SimilarityMatrix mat);
 
-//	--------------------------------------------------------------------------
-//	setFunctor
-//	
-//	Sets object's functor to the one passed as a parameter.
+	/*
+	 * Sets object's functor to the one passed as a parameter.
+	 * 
+	 * @param f Nonlinear functor object.
+	 */
 	void setFunctor(shared_ptr<NonlinearFunctor> f);
 	
-//	--------------------------------------------------------------------------
-//	setMatrix
-//	
-//	Sets object's similarity matrix to the one passed as a parameter.
+	/*
+	 * Sets object's similarity matrix to the one passed as a parameter.
+	 * 
+	 * @param mat Similarity matrix object.
+	 */
 	void setMatrix(SimilarityMatrix mat);
 	
-//	--------------------------------------------------------------------------
-//	compare
-//
-//	Compares three strings and returns a struct containing the match value and 
-//	matched strings.
+	/*
+	 * Compares three strings and returns a struct containing the match value 
+	 * and matched strings.
+	 * 
+	 * @param sA First string.
+	 * @param sB Second string.
+	 * @param sC Third string
+	 * @return A struct witch match value and matched strings.
+	 */
 	CompareResult compare(string &sA, string &sB, string &sC);
 
 private:
