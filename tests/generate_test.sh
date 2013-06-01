@@ -1,5 +1,12 @@
 #!/bin/sh
 
+if [ $# -ne 1 ]
+then
+	echo "Usage:   $0 SIZE"
+	echo "Example: $0 100"
+	exit 65
+fi
+
 in_filename=$1_in.txt
 out_filename=$1_out.txt
 
