@@ -2,7 +2,7 @@
 
 if [ ! -f "mbi" ]
 then
-	echo "Missing 'mbi' binary file. Type 'make'."
+	echo "Missing 'mbi' binary file. Type 'scons'."
 	exit 1
 fi
 

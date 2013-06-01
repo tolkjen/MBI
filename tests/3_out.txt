@@ -1,4 +1,4 @@
--aac
--aag
-caa-
-0
+aaa
+ccc
+ggg
+-3
