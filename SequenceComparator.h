@@ -14,9 +14,9 @@ class SequenceComparator
 public:
 	typedef struct {
 		int value;
-		string sA;
-		string sB;
-		string sC;
+		vector<Alphabet> sA;
+		vector<Alphabet> sB;
+		vector<Alphabet> sC;
 	} CompareResult;
 
 	/*
@@ -74,7 +74,8 @@ public:
 	 * @param sC Third string
 	 * @return A struct witch match value and matched strings.
 	 */
-	CompareResult compare(string &sA, string &sB, string &sC);
+	CompareResult compare(const vector<Alphabet> &sA,
+			const vector<Alphabet> &sB, const vector<Alphabet> &sC);
 
 private:
 	typedef struct {
@@ -83,7 +84,8 @@ private:
 	} Cell;
 
 	void createBorders(Cell *F, int aLength, int bLength, int cLength);
-	CompareResult getResultFromArray(Cell *F, string &sA, string &sB, string &sC); 
+	CompareResult getResultFromArray(Cell *F, const vector<Alphabet> &sA,
+			const vector<Alphabet> &sB, const vector<Alphabet> &sC);
 	int maxElementIndex(int *tab, int count);
 	int maxElementIndex(Cell *F, int i0, int i1, int i2);
 

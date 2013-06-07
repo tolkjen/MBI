@@ -1,6 +1,7 @@
 #include "SimilarityMatrix.h"
 
-int SimilarityMatrix::operator() (char a, char b, char c) {
+int SimilarityMatrix::operator() (Alphabet a, Alphabet b,
+						Alphabet c) const {
 	if (a == b && b == c) {
 		return 1;
 	} else {

@@ -31,7 +31,9 @@ void SequenceComparator::setMatrix(SimilarityMatrix mat) {
 	_similarity = mat;
 }
 
-SequenceComparator::CompareResult SequenceComparator::compare(string &sA, string &sB, string &sC) {
+SequenceComparator::CompareResult SequenceComparator::compare(
+				const vector<Alphabet> &sA, const vector<Alphabet> &sB,
+				const vector<Alphabet> &sC) {
 	const int aLength = sA.size() + 1;
 	const int bLength = sB.size() + 1;
 	const int cLength = sC.size() + 1;
@@ -56,12 +58,12 @@ SequenceComparator::CompareResult SequenceComparator::compare(string &sA, string
 		for (int b = 1; b < bLength; b++) {
 			for (int a = 1; a < aLength; a++) {
 				newMax[0] = F[COORDS(a-1, b-1, c-1)].value + _similarity(sA[a-1], sB[b-1], sC[c-1]);
-				newMax[1] = F[COORDS(a-1, b-1, c)].value + _similarity(sA[a-1], sB[b-1], '-');
-				newMax[2] = F[COORDS(a-1, b, c-1)].value + _similarity(sA[a-1], '-', sC[c-1]);
-				newMax[3] = F[COORDS(a-1, b, c)].value + _similarity(sA[a-1], '-', '-');
-				newMax[4] = F[COORDS(a, b-1, c-1)].value + _similarity('-', sB[b-1], sC[c-1]);
-				newMax[5] = F[COORDS(a, b-1, c)].value + _similarity('-', sB[b-1], '-');
-				newMax[6] = F[COORDS(a, b, c-1)].value + _similarity('-', '-', sC[c-1]);
+				newMax[1] = F[COORDS(a-1, b-1, c)].value + _similarity(sA[a-1], sB[b-1], SYMBOL_PAUSE);
+				newMax[2] = F[COORDS(a-1, b, c-1)].value + _similarity(sA[a-1], SYMBOL_PAUSE, sC[c-1]);
+				newMax[3] = F[COORDS(a-1, b, c)].value + _similarity(sA[a-1], SYMBOL_PAUSE, SYMBOL_PAUSE);
+				newMax[4] = F[COORDS(a, b-1, c-1)].value + _similarity(SYMBOL_PAUSE, sB[b-1], sC[c-1]);
+				newMax[5] = F[COORDS(a, b-1, c)].value + _similarity(SYMBOL_PAUSE, sB[b-1], SYMBOL_PAUSE);
+				newMax[6] = F[COORDS(a, b, c-1)].value + _similarity(SYMBOL_PAUSE, SYMBOL_PAUSE, sC[c-1]);
 					
 				const int prevIndex = maxElementIndex(newMax, 7);
 				F[COORDS(a, b, c)].value = newMax[prevIndex];
@@ -114,7 +116,9 @@ void SequenceComparator::createBorders(Cell *F, int aLength, int bLength, int cL
 	}
 }
 
-SequenceComparator::CompareResult SequenceComparator::getResultFromArray(Cell *F, string &sA, string &sB, string &sC) {
+SequenceComparator::CompareResult SequenceComparator::getResultFromArray(
+			Cell *F, const vector<Alphabet> &sA, const vector<Alphabet> &sB,
+			const vector<Alphabet> &sC) {
 	const int aLength = sA.size() + 1;
 	const int bLength = sB.size() + 1;
 	const int cLength = sC.size() + 1;
@@ -134,33 +138,33 @@ SequenceComparator::CompareResult SequenceComparator::getResultFromArray(Cell *F
 		const int a = index - c * abLength - b * aLength;
 
 		if (diff == previousLUT[0]) {
-			result.sA += sA[a-1];
-			result.sB += sB[b-1];
-			result.sC += sC[c-1];
+			result.sA.push_back(sA[a-1]);
+			result.sB.push_back(sB[b-1]);
+			result.sC.push_back(sC[c-1]);
 		} else if (diff == previousLUT[1]) {
-			result.sA += sA[a-1];
-			result.sB += sB[b-1];
-			result.sC += '-';
+			result.sA.push_back(sA[a-1]);
+			result.sB.push_back(sB[b-1]);
+			result.sC.push_back(SYMBOL_PAUSE);
 		} else if (diff == previousLUT[2]) {
-			result.sA += sA[a-1];
-			result.sB += '-';
-			result.sC += sC[c-1];
+			result.sA.push_back(sA[a-1]);
+			result.sB.push_back(SYMBOL_PAUSE);
+			result.sC.push_back(sC[c-1]);
 		} else if (diff == previousLUT[3]) {
-			result.sA += sA[a-1];
-			result.sB += '-';
-			result.sC += '-';
+			result.sA.push_back(sA[a-1]);
+			result.sB.push_back(SYMBOL_PAUSE);
+			result.sC.push_back(SYMBOL_PAUSE);
 		} else if (diff == previousLUT[4]) {
-			result.sA += '-';
-			result.sB += sB[b-1];
-			result.sC += sC[c-1];
+			result.sA.push_back(SYMBOL_PAUSE);
+			result.sB.push_back(sB[b-1]);
+			result.sC.push_back(sC[c-1]);
 		} else if (diff == previousLUT[5]) {
-			result.sA += '-';
-			result.sB += sB[b-1];
-			result.sC += '-';
+			result.sA.push_back(SYMBOL_PAUSE);
+			result.sB.push_back(sB[b-1]);
+			result.sC.push_back(SYMBOL_PAUSE);
 		} else if (diff == previousLUT[6]) {
-			result.sA += '-';
-			result.sB += '-';
-			result.sC += sC[c-1];
+			result.sA.push_back(SYMBOL_PAUSE);
+			result.sB.push_back(SYMBOL_PAUSE);
+			result.sC.push_back(sC[c-1]);
 		} else {
 
 		}
