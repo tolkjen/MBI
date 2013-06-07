@@ -20,15 +20,16 @@ SequenceComparator::SequenceComparator(void)
 SequenceComparator::SequenceComparator(shared_ptr<NonlinearFunctor> f) :
 	_functor(f)
 {
+	_similarity = shared_ptr<SimilarityMatrix>(new SimpleSimilarityMatrix);
 }
 
-SequenceComparator::SequenceComparator(const SimilarityMatrix &mat) :
+SequenceComparator::SequenceComparator(const shared_ptr<SimilarityMatrix> mat) :
 	_similarity(mat)
 {
 }
 
 SequenceComparator::SequenceComparator(shared_ptr<NonlinearFunctor> f,
-						const SimilarityMatrix &mat) :
+						const shared_ptr<SimilarityMatrix> mat) :
 	_functor(f), _similarity(mat)
 {
 }
@@ -37,7 +38,7 @@ void SequenceComparator::setFunctor(shared_ptr<NonlinearFunctor> f) {
 	_functor = f;
 }
 
-void SequenceComparator::setMatrix(const SimilarityMatrix &mat) {
+void SequenceComparator::setMatrix(const shared_ptr<SimilarityMatrix> mat) {
 	_similarity = mat;
 }
 
@@ -72,19 +73,19 @@ SequenceComparator::CompareResult SequenceComparator::compare(
 		for (int b = 1; b < bLength; b++) {
 			for (int a = 1; a < aLength; a++) {
 				newMax[0] = F[COORDS(a-1, b-1, c-1)].value
-					+ _similarity(sA[a-1], sB[b-1], sC[c-1]);
+					+ (*_similarity)(sA[a-1], sB[b-1], sC[c-1]);
 				newMax[1] = F[COORDS(a-1, b-1, c)].value
-					+ _similarity(sA[a-1], sB[b-1], SYMBOL_PAUSE);
+					+ (*_similarity)(sA[a-1], sB[b-1], SYMBOL_PAUSE);
 				newMax[2] = F[COORDS(a-1, b, c-1)].value
-					+ _similarity(sA[a-1], SYMBOL_PAUSE, sC[c-1]);
+					+ (*_similarity)(sA[a-1], SYMBOL_PAUSE, sC[c-1]);
 				newMax[3] = F[COORDS(a-1, b, c)].value
-					+ _similarity(sA[a-1], SYMBOL_PAUSE, SYMBOL_PAUSE);
+					+ (*_similarity)(sA[a-1], SYMBOL_PAUSE, SYMBOL_PAUSE);
 				newMax[4] = F[COORDS(a, b-1, c-1)].value
-					+ _similarity(SYMBOL_PAUSE, sB[b-1], sC[c-1]);
+					+ (*_similarity)(SYMBOL_PAUSE, sB[b-1], sC[c-1]);
 				newMax[5] = F[COORDS(a, b-1, c)].value
-					+ _similarity(SYMBOL_PAUSE, sB[b-1], SYMBOL_PAUSE);
+					+ (*_similarity)(SYMBOL_PAUSE, sB[b-1], SYMBOL_PAUSE);
 				newMax[6] = F[COORDS(a, b, c-1)].value
-					+ _similarity(SYMBOL_PAUSE, SYMBOL_PAUSE, sC[c-1]);
+					+ (*_similarity)(SYMBOL_PAUSE, SYMBOL_PAUSE, sC[c-1]);
 					
 				const int prevIndex = maxElementIndex(newMax, 7);
 				F[COORDS(a, b, c)].value = newMax[prevIndex];

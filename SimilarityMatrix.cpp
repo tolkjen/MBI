@@ -9,7 +9,7 @@
 
 #include "SimilarityMatrix.h"
 
-int SimilarityMatrix::operator() (Alphabet a, Alphabet b,
+int SimpleSimilarityMatrix::operator() (Alphabet a, Alphabet b,
 						Alphabet c) const {
 	if (a == b && b == c) {
 		return 1;

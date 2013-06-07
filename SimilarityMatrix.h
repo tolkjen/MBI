@@ -24,6 +24,23 @@ static const int NUM_SYMBOLS = MAX_SYMBOL + 1;
 class SimilarityMatrix
 {
 public:
+	/**
+	 * Compares three sequence characters and returns comparison score.
+	 * @param a Character from first sequence.
+	 * @param b Character from second sequence.
+	 * @param c Character from third sequence.
+	 * @return Comparison score.
+	 */
+	virtual int operator() (Alphabet a, Alphabet b, Alphabet c) const = 0;
+};
+
+/**
+ * Simple similarity matrix.
+ * Returns 1 if all three characters matches and -1 if not.
+ */
+class SimpleSimilarityMatrix : public SimilarityMatrix
+{
+public:
 	virtual int operator() (Alphabet a, Alphabet b, Alphabet c) const;
 };
 

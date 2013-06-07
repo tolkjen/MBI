@@ -49,7 +49,7 @@ public:
 	 * 
 	 * @param mat Similarity matrix object.
 	 */
-	SequenceComparator(const SimilarityMatrix &mat);
+	SequenceComparator(const shared_ptr<SimilarityMatrix> mat);
 	
 	/*
 	 * Creates a comparator object with a similarity matrix passed as a 
@@ -59,7 +59,7 @@ public:
 	 * @param mat Similarity matrix object.
 	 */
 	SequenceComparator(shared_ptr<NonlinearFunctor> f,
-						const SimilarityMatrix &mat);
+					const shared_ptr<SimilarityMatrix> mat);
 
 	/*
 	 * Sets object's functor to the one passed as a parameter.
@@ -73,7 +73,7 @@ public:
 	 * 
 	 * @param mat Similarity matrix object.
 	 */
-	void setMatrix(const SimilarityMatrix &mat);
+	void setMatrix(const shared_ptr<SimilarityMatrix> mat);
 	
 	/*
 	 * Compares three strings and returns a struct containing the match value 
@@ -100,7 +100,7 @@ private:
 	int maxElementIndex(Cell *F, int i0, int i1, int i2);
 
 	shared_ptr<NonlinearFunctor> _functor;
-	SimilarityMatrix _similarity;
+	shared_ptr<SimilarityMatrix> _similarity;
 };
 
 #endif

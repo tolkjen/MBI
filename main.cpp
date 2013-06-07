@@ -7,6 +7,8 @@
  * sekwencji wzgledem siebie.
  */
 
+#include <cstdio>
+#include <cstring>
 #include <iostream>
 #include "SequenceComparator.h"
 #include "SimilarityMatrix.h"
@@ -91,6 +93,50 @@ static void translateOutput(string &str, const vector<Alphabet> &output,
 		str += translationTable[a];
 }
 
+static shared_ptr<SimilarityMatrix> loadSimilarityMatrix(
+						int argc, char *argv[]) {
+	const char *fileName = NULL;
+	int data[MAX_SYMBOL][MAX_SYMBOL];
+	int pausePenalty;
+
+	/* Look for matrix file name in command line */
+	for (int i = 0; i < argc - 1; ++i, ++argv) {
+		if (!strcmp(*argv, "-f"))
+			fileName = *(++argv);
+	}
+
+	if (!fileName)
+		return shared_ptr<SimilarityMatrix>(new SimpleSimilarityMatrix);
+
+	/* Found matrix file name in command line */
+	FILE *fMatrix = fopen(fileName, "r");
+	if (!fMatrix) {
+		cerr << "Failed to open matrix file" << endl;
+		return NULL;
+	}
+
+	/* Load matrix data */
+	for (int x = 0; x < MAX_SYMBOL; ++x)
+		for (int y = 0; y < MAX_SYMBOL; ++y)
+			if (fscanf(fMatrix, "%d", &data[x][y]) != 1) {
+				cerr << "Failed to read matrix data" << endl;
+				fclose(fMatrix);
+				return NULL;
+			}
+
+	/* Load pause penalty */
+	if (fscanf(fMatrix, "%d", &pausePenalty) != 1) {
+		cerr << "Failed to read matrix data" << endl;
+		fclose(fMatrix);
+		return NULL;
+	}
+
+	fclose(fMatrix);
+
+	return shared_ptr<SimilarityMatrix>(
+			new CustomSimilarityMatrix(data, pausePenalty));
+}
+
 int main(int argc, char *argv[]) {
 	string str0, str1, str2;
 	vector<Alphabet> in0, in1, in2;
@@ -118,8 +164,15 @@ int main(int argc, char *argv[]) {
 	if (!translationTable)
 		translationTable = DNATranslation;
 
-	SequenceComparator comparator(shared_ptr<NonlinearFunctor>(new QuadraticFunctor()));
-	SequenceComparator::CompareResult result = comparator.compare(in0, in1, in2);
+	shared_ptr<SimilarityMatrix> matrix =
+				loadSimilarityMatrix(argc - 1, argv + 1);
+	if (!matrix)
+		return -2;
+
+	SequenceComparator comparator(shared_ptr<NonlinearFunctor>(
+				new QuadraticFunctor()), matrix);
+	SequenceComparator::CompareResult result =
+				comparator.compare(in0, in1, in2);
 
 	translateOutput(str0, result.sA, translationTable);
 	translateOutput(str1, result.sB, translationTable);
