@@ -40,7 +40,7 @@ public:
 	 * 
 	 * @param mat Similarity matrix object.
 	 */
-	SequenceComparator(SimilarityMatrix mat);
+	SequenceComparator(const SimilarityMatrix &mat);
 	
 	/*
 	 * Creates a comparator object with a similarity matrix passed as a 
@@ -49,7 +49,8 @@ public:
 	 * @param f Nonlinear functor object.
 	 * @param mat Similarity matrix object.
 	 */
-	SequenceComparator(shared_ptr<NonlinearFunctor> f, SimilarityMatrix mat);
+	SequenceComparator(shared_ptr<NonlinearFunctor> f,
+						const SimilarityMatrix &mat);
 
 	/*
 	 * Sets object's functor to the one passed as a parameter.
@@ -63,7 +64,7 @@ public:
 	 * 
 	 * @param mat Similarity matrix object.
 	 */
-	void setMatrix(SimilarityMatrix mat);
+	void setMatrix(const SimilarityMatrix &mat);
 	
 	/*
 	 * Compares three strings and returns a struct containing the match value 
