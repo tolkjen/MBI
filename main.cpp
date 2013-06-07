@@ -89,7 +89,7 @@ static void translateOutput(string &str, const vector<Alphabet> &output,
 	str.clear();
 	str.reserve(output.size());
 
-	for (char a : output)
+	for (Alphabet a : output)
 		str += translationTable[a];
 }
 
