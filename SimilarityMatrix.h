@@ -15,7 +15,17 @@ static const int NUM_SYMBOLS = MAX_SYMBOL + 1;
 class SimilarityMatrix
 {
 public:
-	int operator() (Alphabet a, Alphabet b, Alphabet c) const;
+	virtual int operator() (Alphabet a, Alphabet b, Alphabet c) const;
+};
+
+class CustomSimilarityMatrix : public SimilarityMatrix
+{
+	int _data[NUM_SYMBOLS][NUM_SYMBOLS];
+public:
+	CustomSimilarityMatrix(const int data[MAX_SYMBOL][MAX_SYMBOL],
+							int pausePenalty);
+
+	virtual int operator() (Alphabet a, Alphabet b, Alphabet c) const;
 };
 
 #endif
