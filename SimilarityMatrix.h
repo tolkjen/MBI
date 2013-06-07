@@ -10,6 +10,9 @@
 #ifndef SIMILARITY_MATRIX_H
 #define SIMILARITY_MATRIX_H
 
+/**
+ * Defines internal representation of characters supported in sequences.
+ */
 enum Alphabet {
 	SYMBOL_A,
 	SYMBOL_C,
@@ -18,9 +21,15 @@ enum Alphabet {
 	SYMBOL_PAUSE,
 };
 
+/** Index of last symbol in the alphabet. */
 static const int MAX_SYMBOL = SYMBOL_PAUSE;
+/** Number of symbols in the alphabet. */
 static const int NUM_SYMBOLS = MAX_SYMBOL + 1;
 
+/**
+ * Abstract similarity matrix.
+ * Represents a way to compare three sequence characters (including pauses).
+ */
 class SimilarityMatrix
 {
 public:
@@ -44,10 +53,21 @@ public:
 	virtual int operator() (Alphabet a, Alphabet b, Alphabet c) const;
 };
 
+/**
+ * Custom similarity matrix.
+ * Returns comparison score based pair-wise comparison of three characters
+ * using 2-dimensional similarity matrix and pause penalty.
+ */
 class CustomSimilarityMatrix : public SimilarityMatrix
 {
 	int _data[NUM_SYMBOLS][NUM_SYMBOLS];
 public:
+	/**
+	 * Constructs a custom similarity matrix.
+	 * @param data Matrix of penalty/prize for all alphabet symbols
+	 * except pauses.
+	 * @param pausePenalty Value of pause penalty.
+	 */
 	CustomSimilarityMatrix(const int data[MAX_SYMBOL][MAX_SYMBOL],
 							int pausePenalty);
 

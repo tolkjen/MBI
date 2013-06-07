@@ -18,23 +18,31 @@
 
 using namespace std;
 
+/**
+ * Sequence comparator class.
+ * Allows comparison of three sequences using specified similarity matrix
+ * and nonlinear functor.
+ */
 class SequenceComparator
 {
 public:
+	/**
+	 * Contains results of sequence comparison.
+	 */
 	typedef struct {
-		int value;
-		vector<Alphabet> sA;
-		vector<Alphabet> sB;
-		vector<Alphabet> sC;
+		int value;		/**< comparison score */
+		vector<Alphabet> sA;	/**< result of matching sequence A */
+		vector<Alphabet> sB;	/**< result of matching sequence B */
+		vector<Alphabet> sC;	/**< result of matching sequence C */
 	} CompareResult;
 
-	/*
+	/**
 	 * Creates a comparator object with a default similatity matrix and no 
 	 * nonlinear functor. Before using compare(), set a functor by setFunctor().
 	 */
 	SequenceComparator(void);
 	
-	/*
+	/**
 	 * Creates a comparator object with a default similatity matrix and a 
 	 * functor passed as a parameter.
 	 * 
@@ -42,7 +50,7 @@ public:
 	 */
 	SequenceComparator(shared_ptr<NonlinearFunctor> f);
 	
-	/*
+	/**
 	 * Creates a comparator object with a similarity matrix passed as a 
 	 * parameter and no functor. Before using compare(), set a functor by 
 	 * setFunctor().
@@ -51,7 +59,7 @@ public:
 	 */
 	SequenceComparator(const shared_ptr<SimilarityMatrix> mat);
 	
-	/*
+	/**
 	 * Creates a comparator object with a similarity matrix passed as a 
 	 * parameter and a functor passed as a parameter.
 	 * 
@@ -61,21 +69,21 @@ public:
 	SequenceComparator(shared_ptr<NonlinearFunctor> f,
 					const shared_ptr<SimilarityMatrix> mat);
 
-	/*
+	/**
 	 * Sets object's functor to the one passed as a parameter.
 	 * 
 	 * @param f Nonlinear functor object.
 	 */
 	void setFunctor(shared_ptr<NonlinearFunctor> f);
 	
-	/*
+	/**
 	 * Sets object's similarity matrix to the one passed as a parameter.
 	 * 
 	 * @param mat Similarity matrix object.
 	 */
 	void setMatrix(const shared_ptr<SimilarityMatrix> mat);
 	
-	/*
+	/**
 	 * Compares three strings and returns a struct containing the match value 
 	 * and matched strings.
 	 * 

@@ -15,6 +15,10 @@
 
 using namespace std;
 
+/**
+ * A quadratic non-linear function.
+ * Returns minus sum of squares of all offsets.
+ */
 class QuadraticFunctor : public NonlinearFunctor {
 public:
 	virtual int value(const int a, const int b, const int c) {
@@ -22,14 +26,25 @@ public:
 	}
 };
 
+/** Translation table for DNA. */
 static const char DNATranslation[5] = {
 	'a', 'c', 'g', 't', '-'
 };
 
+/** Translation table for RNA. */
 static const char RNATranslation[5] = {
 	'a', 'c', 'g', 'u', '-'
 };
 
+/**
+ * Converts a string of ASCII characters representing input sequence
+ * to internal alphabet and determines translation table.
+ * @param str Input sequence stored using internal alphabet.
+ * @param input Input sequence stored as a string.
+ * @param translationTable Pointer pointing where to store selected translation
+ * Table. If translation table could not be determined, NULL is stored.
+ * @return 0 if input data was correct, negative error code otherwise.
+ */
 static int validateInput(vector<Alphabet> &str, const string &input,
 						const char **translationTable) {
 	bool uFound = false;
@@ -84,6 +99,13 @@ static int validateInput(vector<Alphabet> &str, const string &input,
 	return 0;
 }
 
+/**
+ * Converts a sequence from internal representation to a string of ASCII
+ * characters using given translation table.
+ * @param str Output sequence stored as a string of ASCII characters.
+ * @param output Input sequence stored in internal representation.
+ * @param translationTable Translation table to use for conversion.
+ */
 static void translateOutput(string &str, const vector<Alphabet> &output,
 						const char *translationTable) {
 	str.clear();
@@ -93,6 +115,13 @@ static void translateOutput(string &str, const vector<Alphabet> &output,
 		str += translationTable[a];
 }
 
+/**
+ * Tries to load custom similarity matrix from file specified in command line
+ * @param argc Command line argument count (without application file name)
+ * @param argv Array of command line argument (without application file name)
+ * @return Pointer to similarity matrix, either simple one or custom loaded
+ * from file. NULL on file read error.
+ */
 static shared_ptr<SimilarityMatrix> loadSimilarityMatrix(
 						int argc, char *argv[]) {
 	const char *fileName = NULL;
@@ -137,6 +166,12 @@ static shared_ptr<SimilarityMatrix> loadSimilarityMatrix(
 			new CustomSimilarityMatrix(data, pausePenalty));
 }
 
+/**
+ * Main application entry point.
+ * @param argc Number of command line arguments.
+ * @param argv Array of command line arguments.
+ * @return 0 on success, negative on error.
+ */
 int main(int argc, char *argv[]) {
 	string str0, str1, str2;
 	vector<Alphabet> in0, in1, in2;
