@@ -1,3 +1,12 @@
+/*
+ * MBI projekt, semestr 13L
+ *
+ * Tomasz Figa, Adam Stelmaszczyk, Piotr Takiel
+ *
+ * Badanie podobienstwa trzech sekwencji z nieliniowa kara za przesuniecie
+ * sekwencji wzgledem siebie.
+ */
+
 #include "SequenceComparator.h"
 #include <algorithm>
 
